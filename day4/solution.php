@@ -38,8 +38,38 @@ foreach ($rows as $row){
 
     if($letters == $checksum){
         $sumOfSectorIds += $sectorId;
-        $realRooms[] = $matches[0];
+        $realRooms[] = [
+            'string' => $matches[1],
+            'sectorId' => $matches[2]
+        ];
+    }
+}
+$decryptedRooms = [];
+foreach($realRooms as $key => $realRoom){
+    foreach(str_split($realRoom['string']) as $character){
+        if($character == '-'){
+            $next_ch = ' ';
+        }
+        else {
+            $next_ch = $character;
+            for($i = 0; $i < (int) $realRoom['sectorId']; $i++){
+                $next_ch = ++$character;
+                if (strlen($next_ch) > 1) { // if you go beyond z or Z reset to a or A
+                    $next_ch = substr($next_ch,-1);
+                }
+
+            }
+        }
+
+
+        if(!isset($decryptedRooms[$key][0])){
+            $decryptedRooms[$key][0] = '';
+        }
+
+        $decryptedRooms[$key][0] .= $next_ch;
+        $decryptedRooms[$key]['code'] = $realRoom['sectorId'];
     }
 }
 
-var_dump($realRooms);
+var_dump($decryptedRooms);
+file_put_contents('./result.txt', print_r($decryptedRooms, true));
