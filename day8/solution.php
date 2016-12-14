@@ -4,12 +4,12 @@ $data = file_get_contents("input.txt", TRUE);
 $rows = explode(PHP_EOL, $data);
 
 $display = [
+    0 => ['.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.'],
     1 => ['.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.'],
     2 => ['.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.'],
     3 => ['.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.'],
     4 => ['.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.'],
     5 => ['.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.'],
-    6 => ['.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.'],
 ];
 
 $i = 0;
@@ -20,8 +20,6 @@ foreach($rows as $row){
 function modifyDisplay($instruction, &$display){
 
     preg_match('/^(\w+) (?:(\d+)x(\d+)|(row|column))(?: (y|x)=(\d+) by (\d+))?/', $instruction, $instructions);
-
-//    var_dump($instructions);
 
     if($instructions[1] == 'rect') {
         for($i = 0; $i < $instructions[2]; $i++){
@@ -42,9 +40,11 @@ function modifyDisplay($instruction, &$display){
             $display[$instructions[6]] = $newLine;
             ksort($display);
         } else {
-            $copy = [$display[1][$instructions[6]], $display[2][$instructions[6]], $display[3][$instructions[6]], $display[4][$instructions[6]], $display[5][$instructions[6]], $display[6][$instructions[6]] ];
+            $copy = [$display[0][$instructions[6]], $display[1][$instructions[6]], $display[2][$instructions[6]], $display[3][$instructions[6]], $display[4][$instructions[6]], $display[5][$instructions[6]] ];
 
-            var_dump($instructions);
+//            ksort($copy);
+
+
             $newRow = [];
 
             foreach($copy as $key => $pixel){
@@ -55,21 +55,21 @@ function modifyDisplay($instruction, &$display){
                 }
             }
 
-            var_dump($newRow);
-
-            $display[1][$instructions[6]] = $newRow[0];
-            $display[2][$instructions[6]] = $newRow[1];
-            $display[3][$instructions[6]] = $newRow[2];
-            $display[4][$instructions[6]] = $newRow[3];
-            $display[5][$instructions[6]] = $newRow[4];
-            $display[6][$instructions[6]] = $newRow[5];
-
+            foreach($newRow as $key => $value){
+                $display[$key][$instructions[6]] = $value;
+            }
         }
     }
 }
 
-
 drawDisplay($display);
+
+$numberOfPixels = 0;
+
+foreach($display as $row){
+    $numberOfPixels += substr_count(implode($row), '#');
+}
+echo $numberOfPixels;
 
 
 function drawDisplay($display){
